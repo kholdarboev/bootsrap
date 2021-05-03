@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Field from '../Common/Field'
-
+import {withFormik} from 'formik';
 
 const fields ={
     sections:[
@@ -19,19 +19,9 @@ const fields ={
 
 class Contact extends Component{
 
-constructor(props){
-    super(props)
-    this.state={
-        name: '',
-        email: '',
-        phone: '',
-        message: ''
-    }
-}
-submitForm = (e) => {
-    e.preventDefault()
-  alert('Form submitted')
-}
+ 
+
+
     render(){
         return(
             <section id="contact">
@@ -44,7 +34,7 @@ submitForm = (e) => {
       </div>
       <div className="row">
         <div className="col-lg-12">
-          <form onSubmit={e=> this.submitForm(e)}    name="sentMessage" novalidate="novalidate">
+          <form onSubmit={this.props.handleSubmit}    name="sentMessage" novalidate="novalidate">
             <div className="row">
                 
                 {fields.sections.map((section,sectionIndex)=>{
@@ -54,9 +44,12 @@ submitForm = (e) => {
                                 return<Field 
                                     {...field}
                                     key={i}
-                                    value={this.state[field.name]}
-                                    onChange={e=> this.setState({
-                                        [field.name]:e.target.value})}
+                                    value={this.props.values[field.name]}
+                                    name={field.name}
+                                    onChange={this.props.handleChange}
+                                    onBlur = {this.props.handleBlur}
+                                    touched={(this.props.touched[field.name])}
+                                    errors={(this.props.errors[field.name])}
                                  />
                             })}
                         </div>
@@ -81,4 +74,24 @@ submitForm = (e) => {
         )
     }
 }
-export default Contact
+export default withFormik({
+    mapPropsToValues:()=>({
+        name: '',
+        email: '',
+        phone: '',
+        message: '',
+        }),
+        validate: values =>{
+            const errors = {};
+
+            Object.keys(values).map(v=>{
+                if (!values[v]){
+                    errors[v] = "Required"
+                }
+            })
+                return errors;
+        },
+        handleSubmit:(values,{setSubmitting})=>{
+            alert('Form was submitted', JSON.stringify(values));
+        }
+})(Contact);
