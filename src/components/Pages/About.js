@@ -11,7 +11,7 @@ export class About extends Component {
              <Header 
                 title='About us'
                 subtitle="It's really great car"
-                showButton={true}
+                showButton={false}
                 image={image}
                 />
           <Services/>
